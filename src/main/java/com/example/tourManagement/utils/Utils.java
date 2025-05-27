@@ -1,0 +1,75 @@
+package com.example.tourManagement.utils;
+
+import com.example.tourManagement.dto.BookingDTO;
+import com.example.tourManagement.dto.TourDTO;
+import com.example.tourManagement.dto.TourZoneDTO;
+import com.example.tourManagement.dto.UserDTO;
+import com.example.tourManagement.entity.*;
+
+import java.util.stream.Collectors;
+
+public class Utils {
+
+    public static UserDTO mapUserEntityToUserDTO(User user) {
+        UserDTO userDTO = new UserDTO();
+
+        userDTO.setUserId(user.getUserId());
+        userDTO.setUserName(user.getUsername());
+        userDTO.setUserEmail(user.getUserEmail());
+        userDTO.setUserAddress(user.getUserAddress());
+        userDTO.setUserPhone(user.getUserPhone());
+        userDTO.setUserRole(user.getUserRole());
+
+        if (user.getBookings() != null) {
+            userDTO.setBookings(user.getBookings().stream()
+                    .map(Utils::mapBookingEntityToBookingDTO)
+                    .collect(Collectors.toList()));
+        }
+
+        return userDTO;
+    }
+
+    public static BookingDTO mapBookingEntityToBookingDTO(Booking booking) {
+        BookingDTO bookingDTO = new BookingDTO();
+
+        bookingDTO.setBookingId(booking.getBookingId());
+        bookingDTO.setNumPeople(booking.getNumPeople());
+        bookingDTO.setTotalPrice(bookingDTO.getTotalPrice());
+        bookingDTO.setBookingStatus(bookingDTO.getBookingStatus());
+        bookingDTO.setBookingDate(booking.getBookingDate());
+
+        if (booking.getUser() != null) {
+            bookingDTO.setUserId(booking.getUser().getUserId());
+        }
+
+        if (booking.getSchedule() != null) {
+            bookingDTO.setScheduleId(booking.getSchedule().getScheduleId());
+        }
+
+        return bookingDTO;
+    }
+
+    public static TourDTO mapTourEntityToTourDTO(Tour tour) {
+        TourDTO tourDTO = new TourDTO();
+
+        tourDTO.setTourId(tour.getTourId());
+        tourDTO.setTourTitle(tour.getTourTitle());
+        tourDTO.setTourDescription(tour.getTourDescription());
+        tourDTO.setTourCapacity(tour.getTourCapacity());
+        tourDTO.setTourPrice(tour.getTourPrice());
+        tourDTO.setTourStatus(tour.getTourStatus());
+        tourDTO.setTourDuration(tour.getTourDuration());
+
+        if (tour.getTourCreatedBy() != null) {
+            tourDTO.setTourCreatedByUserId(tour.getTourCreatedBy().getUserId());
+        }
+
+        if (tour.getLocations() != null) {
+            tourDTO.setLocationIds(tour.getLocations().stream()
+                    .map(Location::getLocationId)
+                    .collect(Collectors.toList()));
+        }
+
+        return tourDTO;
+    }
+}
