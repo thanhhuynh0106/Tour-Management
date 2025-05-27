@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -31,9 +32,8 @@ public class Tour {
     @Column(name = "tour_capacity")
     private Integer tourCapacity;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "tour_status", columnDefinition = "ENUM('active', 'inactive', 'draft')")
-    private TourStatus tourStatus;
+    @Column(name = "tour_status")
+    private String tourStatus;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tour_created_by", referencedColumnName = "user_id")
@@ -45,11 +45,6 @@ public class Tour {
             joinColumns = @JoinColumn(name = "tour_id"),
             inverseJoinColumns = @JoinColumn(name = "location_id")
     )
-    private Set<Location> locations;
+    private List<Location> locations;
 
-    public enum TourStatus {
-        active,
-        inactive,
-        draft
-    }
 }

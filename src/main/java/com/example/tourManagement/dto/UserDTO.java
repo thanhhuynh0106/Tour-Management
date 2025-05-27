@@ -4,6 +4,9 @@ import com.example.tourManagement.entity.User;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserDTO {
@@ -12,5 +15,7 @@ public class UserDTO {
     private String userEmail;
     private String userPhone;
     private String userAddress;
-    private User.UserRole userRole;
+    private String userRole;
+
+    private List<BookingDTO> bookings = new ArrayList<>();
 }

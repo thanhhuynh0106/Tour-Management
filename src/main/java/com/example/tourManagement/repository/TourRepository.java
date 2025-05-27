@@ -9,7 +9,7 @@ import java.util.List;
 
 @Repository
 public interface TourRepository extends JpaRepository<Tour, Integer> {
-    List<Tour> findByTourStatus(Tour.TourStatus status);
+    List<Tour> findByTourStatus(String status);
     List<Tour> findByTourPriceBetween(BigDecimal minPrice, BigDecimal maxPrice);
     List<Tour> findByTourDuration(Integer duration);
 }

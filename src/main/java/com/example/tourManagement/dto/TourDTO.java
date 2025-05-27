@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 
 import java.math.BigDecimal;
-import java.util.List; // Hoặc Set cho locations
+import java.util.List;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -17,7 +17,7 @@ public class TourDTO {
     private BigDecimal tourPrice;
     private Integer tourDuration;
     private Integer tourCapacity;
-    private Tour.TourStatus tourStatus;
+    private String tourStatus;
 
     private Integer tourCreatedByUserId;
     private List<Integer> locationIds;
