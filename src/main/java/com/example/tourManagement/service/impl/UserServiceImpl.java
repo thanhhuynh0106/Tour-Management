@@ -15,7 +15,9 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -87,21 +89,118 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public ResponseDTO getUserById(Integer userId) {
-        return null;
+        ResponseDTO responseDTO = new ResponseDTO();
+
+        try {
+            User user = userRepository.findById(userId).orElseThrow(() -> new UsernameNotFoundException("User not found!"));
+            UserDTO userDTO = Utils.mapUserEntityToUserDTO(user);
+            responseDTO.setUserDTO(userDTO);
+
+            responseDTO.setStatusCode(200);
+            responseDTO.setMessage("Successful!!!");
+        } catch (IllegalArgumentException e ){
+            responseDTO.setStatusCode(400);
+            responseDTO.setMessage(e.getMessage());
+        } catch (Exception e) {
+            responseDTO.setStatusCode(500);
+            responseDTO.setMessage("Internal server error");
+        }
+
+        return responseDTO;
     }
 
     @Override
     public ResponseDTO getAllUsers() {
-        return null;
+        ResponseDTO responseDTO = new ResponseDTO();
+
+        try {
+            List<User> userList = userRepository.findAll();
+            List<UserDTO> userDTOList = userList.stream().map(Utils::mapUserEntityToUserDTO).toList();
+            responseDTO.setUserList(userDTOList);
+
+            responseDTO.setStatusCode(200);
+            responseDTO.setMessage("Successful!!!");
+        } catch (IllegalArgumentException e ){
+            responseDTO.setStatusCode(400);
+            responseDTO.setMessage(e.getMessage());
+        } catch (Exception e) {
+            responseDTO.setStatusCode(500);
+            responseDTO.setMessage("Internal server error");
+        }
+
+
+        return responseDTO;
     }
 
     @Override
     public ResponseDTO updateUser(Integer userId, UserDTO userDTO) {
-        return null;
+        ResponseDTO responseDTO = new ResponseDTO();
+
+        try {
+            User user = userRepository.findById(userId).orElseThrow(() -> new UsernameNotFoundException("User not found!"));
+            if (userDTO.getUserName() != null) {
+                user.setUserName(userDTO.getUserName());
+            }
+
+            if (userDTO.getUserEmail() != null) {
+                user.setUserEmail(userDTO.getUserEmail());
+            }
+
+            if (userDTO.getUserAddress() != null) {
+                user.setUserAddress(userDTO.getUserAddress());
+            }
+
+            if (userDTO.getUserPhone() != null) {
+                user.setUserPhone(userDTO.getUserPhone());
+            }
+
+            if (userDTO.getUserPassword() != null) {
+                user.setUserPassword(passwordEncoder.encode(userDTO.getUserPassword()));
+            }
+
+            if (userDTO.getUserRole() != null) {
+                user.setUserRole(userDTO.getUserRole());
+            }
+
+            User updatedUser = userRepository.save(user);
+            UserDTO responseUser = Utils.mapUserEntityToUserDTO(updatedUser);
+            responseDTO.setUserDTO(responseUser);
+
+            responseDTO.setStatusCode(200);
+            responseDTO.setMessage("Successful!!!");
+        } catch (IllegalArgumentException e ){
+            responseDTO.setStatusCode(400);
+            responseDTO.setMessage(e.getMessage());
+        } catch (Exception e) {
+            responseDTO.setStatusCode(500);
+            responseDTO.setMessage("Internal server error");
+        }
+
+
+        return responseDTO;
     }
 
     @Override
     public ResponseDTO deleteUser(Integer userId) {
+        ResponseDTO responseDTO = new ResponseDTO();
+        try {
+            User user = userRepository.findById(userId).orElseThrow(() -> new UsernameNotFoundException("User not found!!!"));
+            userRepository.deleteById(userId);
+            responseDTO.setStatusCode(200);
+            responseDTO.setMessage("Successful!!!");
+        } catch (IllegalArgumentException e ){
+            responseDTO.setStatusCode(400);
+            responseDTO.setMessage(e.getMessage());
+        } catch (Exception e) {
+            responseDTO.setStatusCode(500);
+            responseDTO.setMessage("Internal server error");
+        }
+
+        return responseDTO;
+    }
+
+    @Override
+    public ResponseDTO getUserBooking(Integer userId) {
         return null;
     }
 }

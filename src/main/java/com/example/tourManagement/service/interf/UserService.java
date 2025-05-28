@@ -15,4 +15,6 @@ public interface UserService {
     ResponseDTO getAllUsers();
     ResponseDTO updateUser(Integer userId, UserDTO userDTO);
     ResponseDTO deleteUser(Integer userId);
+
+    ResponseDTO getUserBooking(Integer userId);
 }
