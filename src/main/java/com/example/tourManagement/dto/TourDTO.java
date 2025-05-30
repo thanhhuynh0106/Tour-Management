@@ -21,4 +21,5 @@ public class TourDTO {
 
     private Integer tourCreatedByUserId;
     private List<Integer> locationIds;
+    private List<ItineraryDTO> itineraries;
 }

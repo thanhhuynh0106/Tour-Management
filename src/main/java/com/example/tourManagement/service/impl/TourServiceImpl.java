@@ -1,0 +1,176 @@
+package com.example.tourManagement.service.impl;
+
+import com.example.tourManagement.dto.ResponseDTO;
+import com.example.tourManagement.dto.TourDTO;
+import com.example.tourManagement.dto.ItineraryDTO;
+import com.example.tourManagement.dto.ItineraryLocationDTO;
+import com.example.tourManagement.entity.*; // Import all entities
+import com.example.tourManagement.repository.*; // Import all repositories
+import com.example.tourManagement.service.interf.TourService;
+import com.example.tourManagement.utils.Utils;
+import com.example.tourManagement.utils.Utils;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.io.WKTReader;
+import org.locationtech.jts.io.ParseException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.*;
+import java.util.stream.Collectors;
+
+@Service
+public class TourServiceImpl implements TourService {
+
+    @Autowired
+    private TourRepository tourRepository;
+    @Autowired
+    private UserRepository userRepository;
+
+    @Override
+    @Transactional
+    public ResponseDTO createTour(TourDTO tourDTO) {
+        ResponseDTO responseDTO = new ResponseDTO();
+        try {
+            Tour tour = new Tour();
+            tour.setTourTitle(tourDTO.getTourTitle());
+            tour.setTourDescription(tourDTO.getTourDescription());
+            tour.setTourPrice(tourDTO.getTourPrice());
+            tour.setTourDuration(tourDTO.getTourDuration());
+            tour.setTourCapacity(tourDTO.getTourCapacity());
+            tour.setTourStatus(tourDTO.getTourStatus());
+
+            if (tourDTO.getTourCreatedByUserId() != null) {
+                User createdBy = userRepository.findById(tourDTO.getTourCreatedByUserId())
+                        .orElseThrow(() -> new NoSuchElementException("User not found with ID: " + tourDTO.getTourCreatedByUserId()));
+                tour.setTourCreatedBy(createdBy);
+            }
+
+            Tour savedTour = tourRepository.save(tour);
+
+            responseDTO.setTourDTO(Utils.mapTourEntityToTourDTO(savedTour));
+            responseDTO.setMessage("Tour created successfully");
+            responseDTO.setStatusCode(200);
+
+        } catch (NoSuchElementException e) {
+            responseDTO.setMessage(e.getMessage());
+            responseDTO.setStatusCode(404);
+        } catch (Exception e) {
+            responseDTO.setMessage("Error creating tour: " + e.getMessage());
+            responseDTO.setStatusCode(500);
+        }
+        return responseDTO;
+    }
+
+    @Override
+    public ResponseDTO getTourById(Integer tourId) {
+        ResponseDTO responseDTO = new ResponseDTO();
+        try {
+            Tour tour = tourRepository.findById(tourId)
+                    .orElseThrow(() -> new NoSuchElementException("Tour not found with ID: " + tourId));
+            TourDTO tourDTO = Utils.mapTourEntityToTourDTO(tour);
+            responseDTO.setTourDTO(tourDTO);
+            responseDTO.setMessage("Tour retrieved successfully");
+            responseDTO.setStatusCode(200);
+        } catch (NoSuchElementException e) {
+            responseDTO.setMessage(e.getMessage());
+            responseDTO.setStatusCode(404);
+        } catch (Exception e) {
+            responseDTO.setMessage("Error retrieving tour: " + e.getMessage());
+            responseDTO.setStatusCode(500);
+        }
+        return responseDTO;
+    }
+
+    @Override
+    public ResponseDTO getAllTour() {
+        ResponseDTO responseDTO = new ResponseDTO();
+        try {
+            List<Tour> tourList = tourRepository.findAll();
+            List<TourDTO> tourDTOsList = Utils.mapTourListEntityToTourListDTO(tourList);
+            responseDTO.setTourList(tourDTOsList);
+            responseDTO.setMessage("All tours retrieved successfully");
+            responseDTO.setStatusCode(200);
+        } catch (Exception e) {
+            responseDTO.setMessage("Error retrieving tours: " + e.getMessage());
+            responseDTO.setStatusCode(500);
+        }
+        return responseDTO;
+    }
+
+    @Autowired private TourRouteRepository tourRouteRepository;
+
+    @Override
+    @Transactional
+    public ResponseDTO updateTour(Integer tourId, TourDTO tourDTO) {
+        ResponseDTO responseDTO = new ResponseDTO();
+        try {
+            Tour tour = tourRepository.findById(tourId)
+                    .orElseThrow(() -> new NoSuchElementException("Tour not found with ID: " + tourId));
+
+            if (tourDTO.getTourTitle() != null) {
+                tour.setTourTitle(tourDTO.getTourTitle());
+            }
+            if (tourDTO.getTourDescription() != null) {
+                tour.setTourDescription(tourDTO.getTourDescription());
+            }
+            if (tourDTO.getTourPrice() != null) {
+                tour.setTourPrice(tourDTO.getTourPrice());
+            }
+            if (tourDTO.getTourDuration() != null) {
+                tour.setTourDuration(tourDTO.getTourDuration());
+            }
+            if (tourDTO.getTourCapacity() != null) {
+                tour.setTourCapacity(tourDTO.getTourCapacity());
+            }
+            if (tourDTO.getTourStatus() != null) {
+                tour.setTourStatus(tourDTO.getTourStatus());
+            }
+            if (tourDTO.getTourCreatedByUserId() != null) {
+                User createdBy = userRepository.findById(tourDTO.getTourCreatedByUserId())
+                        .orElseThrow(() -> new NoSuchElementException("User not found with ID: " + tourDTO.getTourCreatedByUserId()));
+                tour.setTourCreatedBy(createdBy);
+            }
+
+            Tour updatedTour = tourRepository.save(tour);
+
+            responseDTO.setTourDTO(Utils.mapTourEntityToTourDTO(updatedTour));
+            responseDTO.setMessage("Tour updated successfully (basic properties only)");
+            responseDTO.setStatusCode(200);
+        } catch (NoSuchElementException e) {
+            responseDTO.setMessage(e.getMessage());
+            responseDTO.setStatusCode(404);
+        } catch (Exception e) {
+            responseDTO.setMessage("Error updating tour: " + e.getMessage());
+            responseDTO.setStatusCode(500);
+        }
+        return responseDTO;
+    }
+
+
+    @Override
+    @Transactional
+    public ResponseDTO deleteTour(Integer tourId) {
+        ResponseDTO responseDTO = new ResponseDTO();
+        try {
+            Tour tour = tourRepository.findById(tourId)
+                    .orElseThrow(() -> new NoSuchElementException("Tour not found with ID: " + tourId));
+
+            tourRouteRepository.findByTour(tour).ifPresent(tourRouteRepository::delete);
+
+            tourRepository.delete(tour);
+            responseDTO.setMessage("Tour deleted successfully");
+            responseDTO.setStatusCode(200);
+        } catch (NoSuchElementException e) {
+            responseDTO.setMessage(e.getMessage());
+            responseDTO.setStatusCode(404);
+        } catch (Exception e) {
+            responseDTO.setMessage("Error deleting tour: " + e.getMessage());
+            responseDTO.setStatusCode(500);
+        }
+        return responseDTO;
+    }
+}

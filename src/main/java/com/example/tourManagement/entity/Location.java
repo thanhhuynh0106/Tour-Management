@@ -9,7 +9,11 @@ import java.util.List;
 
 @Entity
 @Table(name = "location")
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@ToString
 public class Location {
 
     @Id
@@ -36,6 +40,7 @@ public class Location {
     private String locationImage;
 
     @Column(name = "geom", columnDefinition = "POINT SRID 3857")
+    @ToString.Exclude
     private Point geom;
 
     @ManyToOne(fetch = FetchType.LAZY)

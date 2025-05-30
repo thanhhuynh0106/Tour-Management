@@ -9,7 +9,11 @@ import java.util.Set;
 
 @Entity
 @Table(name = "tour")
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@ToString
 public class Tour {
 
     @Id
@@ -37,6 +41,7 @@ public class Tour {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tour_created_by", referencedColumnName = "user_id")
+    @ToString.Exclude
     private User tourCreatedBy;
 
     @ManyToMany
@@ -45,6 +50,11 @@ public class Tour {
             joinColumns = @JoinColumn(name = "tour_id"),
             inverseJoinColumns = @JoinColumn(name = "location_id")
     )
+    @ToString.Exclude
     private List<Location> locations;
+
+//    @OneToMany(mappedBy = "tour", cascade = CascadeType.ALL, orphanRemoval = true)
+//    @ToString.Exclude
+//    private List<Itinerary> itineraries;
 
 }

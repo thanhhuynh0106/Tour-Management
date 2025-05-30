@@ -8,7 +8,11 @@ import java.util.List;
 
 @Entity
 @Table(name = "itinerary")
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@ToString
 public class Itinerary {
 
     @Id
@@ -18,6 +22,7 @@ public class Itinerary {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tour_id", referencedColumnName = "tour_id")
+    @ToString.Exclude
     private Tour tour;
 
     @Column(name = "day_number")
@@ -30,5 +35,6 @@ public class Itinerary {
     private String descriptions;
 
     @OneToMany(mappedBy = "itinerary", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ToString.Exclude
     private List<ItineraryLocation> itineraryLocations;
 }
