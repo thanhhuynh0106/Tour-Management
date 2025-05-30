@@ -1,5 +1,6 @@
 package com.example.tourManagement.controller;
 
+import com.example.tourManagement.dto.AddItineraryRequest;
 import com.example.tourManagement.dto.ResponseDTO;
 import com.example.tourManagement.dto.TourDTO;
 import com.example.tourManagement.service.interf.TourService;
@@ -42,6 +43,12 @@ public class TourController {
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<ResponseDTO> deleteTour(@PathVariable Integer id) {
         ResponseDTO response = tourService.deleteTour(id);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
+    }
+
+    @PostMapping("/{tourId}/itineraries")
+    public ResponseEntity<ResponseDTO> addItineraryToTour(@PathVariable Integer tourId, @RequestBody AddItineraryRequest request) {
+        ResponseDTO response = tourService.addItineraryToTour(tourId, request);
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
 }

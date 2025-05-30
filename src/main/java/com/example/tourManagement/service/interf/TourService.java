@@ -2,6 +2,7 @@ package com.example.tourManagement.service.interf;
 
 
 
+import com.example.tourManagement.dto.AddItineraryRequest;
 import com.example.tourManagement.dto.ResponseDTO;
 import com.example.tourManagement.dto.TourDTO;
 import com.example.tourManagement.entity.Tour;
@@ -16,4 +17,5 @@ public interface TourService {
     ResponseDTO getAllTour();
     ResponseDTO updateTour(Integer tourId, TourDTO TourDTO);
     ResponseDTO deleteTour(Integer tourId);
+    ResponseDTO addItineraryToTour(Integer tourId, AddItineraryRequest request);
 }

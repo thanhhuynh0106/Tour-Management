@@ -1,9 +1,6 @@
 package com.example.tourManagement.service.impl;
 
-import com.example.tourManagement.dto.ResponseDTO;
-import com.example.tourManagement.dto.TourDTO;
-import com.example.tourManagement.dto.ItineraryDTO;
-import com.example.tourManagement.dto.ItineraryLocationDTO;
+import com.example.tourManagement.dto.*;
 import com.example.tourManagement.entity.*; // Import all entities
 import com.example.tourManagement.repository.*; // Import all repositories
 import com.example.tourManagement.service.interf.TourService;
@@ -29,6 +26,13 @@ public class TourServiceImpl implements TourService {
     private TourRepository tourRepository;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private ItineraryRepository itineraryRepository;
+    @Autowired
+    private LocationRepository locationRepository;
+    @Autowired
+    private ItineraryLocationRepository itineraryLocationRepository;
+
 
     @Override
     @Transactional
@@ -199,6 +203,65 @@ public class TourServiceImpl implements TourService {
             responseDTO.setStatusCode(404);
         } catch (Exception e) {
             responseDTO.setMessage("Error deleting tour: " + e.getMessage());
+            responseDTO.setStatusCode(500);
+        }
+        return responseDTO;
+    }
+
+    @Override
+    @Transactional
+    public ResponseDTO addItineraryToTour(Integer tourId, AddItineraryRequest request) {
+        ResponseDTO responseDTO = new ResponseDTO();
+        try {
+            Tour tour = tourRepository.findById(tourId)
+                    .orElseThrow(() -> new NoSuchElementException("Tour not found with ID: " + tourId));
+
+            Itinerary itinerary = new Itinerary();
+            itinerary.setTour(tour);
+            itinerary.setDayNumber(request.getDayNumber());
+            itinerary.setTitle(request.getTitle());
+            itinerary.setDescriptions(request.getDescriptions());
+
+            Itinerary savedItinerary = itineraryRepository.save(itinerary);
+
+            if (request.getItineraryLocations() != null && !request.getItineraryLocations().isEmpty()) {
+                List<ItineraryLocation> itineraryLocations = new ArrayList<>();
+                request.getItineraryLocations().sort(Comparator.comparing(ItineraryLocationDTO::getSequenceOrder));
+
+                for (ItineraryLocationDTO itLocDTO : request.getItineraryLocations()) {
+                    Location location = locationRepository.findById(itLocDTO.getLocationId())
+                            .orElseThrow(() -> new NoSuchElementException("Location not found with ID: " + itLocDTO.getLocationId()));
+
+                    ItineraryLocationId itineraryLocationId = new ItineraryLocationId();
+                    itineraryLocationId.setItineraryId(savedItinerary.getItineraryId());
+                    itineraryLocationId.setLocationId(location.getLocationId());
+
+                    ItineraryLocation itineraryLocation = new ItineraryLocation();
+                    itineraryLocation.setId(itineraryLocationId);
+                    itineraryLocation.setItinerary(savedItinerary);
+                    itineraryLocation.setLocation(location);
+                    itineraryLocation.setSequenceOrder(itLocDTO.getSequenceOrder());
+
+                    itineraryLocations.add(itineraryLocation);
+                }
+                itineraryLocationRepository.saveAll(itineraryLocations);
+                savedItinerary.setItineraryLocations(itineraryLocations);
+            }
+            if (tour.getItineraries() == null) {
+                tour.setItineraries(new ArrayList<>());
+            }
+            tour.getItineraries().add(savedItinerary);
+
+
+            responseDTO.setTourDTO(Utils.mapTourEntityToTourDTO(tour));
+            responseDTO.setMessage("Itinerary added to tour successfully.");
+            responseDTO.setStatusCode(200);
+
+        } catch (NoSuchElementException e) {
+            responseDTO.setMessage(e.getMessage());
+            responseDTO.setStatusCode(404);
+        } catch (Exception e) {
+            responseDTO.setMessage("Error adding itinerary to tour: " + e.getMessage());
             responseDTO.setStatusCode(500);
         }
         return responseDTO;
