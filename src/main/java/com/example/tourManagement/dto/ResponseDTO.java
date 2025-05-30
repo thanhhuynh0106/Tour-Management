@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 
 import java.util.List;
+import java.util.Map;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -28,4 +29,8 @@ public class ResponseDTO {
     private List<TourDTO> tourList;
 
     private TourRouteDTO tourRouteDTO;
+
+    private List<Map<String, Object>> locations;
+    private List<Map<String, Object>> tourRoutes;
+    private List<Map<String, Object>> tourZones;
 }

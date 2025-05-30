@@ -26,6 +26,6 @@ public class TourRoute {
     private Tour tour;
 
 
-    @Column(name = "route_line", columnDefinition = "LINESTRING SRID 3857")
+    @Column(name = "route_line", columnDefinition = "LINESTRING SRID 4326")
     private LineString routeLine;
 }

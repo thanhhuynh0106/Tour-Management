@@ -6,6 +6,7 @@ import com.example.tourManagement.dto.TourZoneDTO;
 import com.example.tourManagement.dto.UserDTO;
 import com.example.tourManagement.entity.*;
 
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class Utils {
@@ -71,5 +72,11 @@ public class Utils {
         }
 
         return tourDTO;
+    }
+
+    public static List<BookingDTO> mapBookingListEntityToBookingListDTO(List<Booking> bookings) {
+        return bookings.stream()
+                .map(Utils::mapBookingEntityToBookingDTO)
+                .collect(Collectors.toList());
     }
 }

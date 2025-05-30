@@ -22,7 +22,7 @@ public class TourZone {
     private String zoneDescription;
 
 
-    @Column(name = "geom", columnDefinition = "POLYGON SRID 3857")
+    @Column(name = "geom", columnDefinition = "POLYGON SRID 4326")
     private Polygon geom;
 
     @Column(name = "zone_image")

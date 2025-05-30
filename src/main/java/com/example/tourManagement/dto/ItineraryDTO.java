@@ -14,6 +14,4 @@ public class ItineraryDTO {
     private Integer dayNumber;
     private String title;
     private String descriptions;
-    private Integer locationId;
-    private String geomWkt;
 }

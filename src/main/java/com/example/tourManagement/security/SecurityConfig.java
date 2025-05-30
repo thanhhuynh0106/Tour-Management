@@ -38,6 +38,8 @@ public class SecurityConfig {
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/pay/**").permitAll()
                         .requestMatchers("/user/**").permitAll()
+                        .requestMatchers("/booking/**").permitAll()
+                        .requestMatchers("/map/**").permitAll()
                         .anyRequest().authenticated())
                 .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider())

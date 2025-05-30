@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.locationtech.jts.geom.Point;
 
+import java.util.List;
+
 @Entity
 @Table(name = "location")
 @Data
@@ -39,4 +41,7 @@ public class Location {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "zone_id", referencedColumnName = "zone_id")
     private TourZone tourZone;
+
+    @OneToMany(mappedBy = "location", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ItineraryLocation> itineraryLocations;
 }

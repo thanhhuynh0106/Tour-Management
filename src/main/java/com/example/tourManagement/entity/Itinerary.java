@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.locationtech.jts.geom.Point;
 
+import java.util.List;
+
 @Entity
 @Table(name = "itinerary")
 @Data
@@ -27,10 +29,6 @@ public class Itinerary {
     @Column(name = "descriptions", columnDefinition = "TEXT")
     private String descriptions;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "location_id", referencedColumnName = "location_id")
-    private Location location;
-
-    @Column(name = "geom", columnDefinition = "POINT SRID 3857")
-    private Point geom;
+    @OneToMany(mappedBy = "itinerary", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ItineraryLocation> itineraryLocations;
 }
