@@ -53,8 +53,8 @@ public class Tour {
     @ToString.Exclude
     private List<Location> locations;
 
-//    @OneToMany(mappedBy = "tour", cascade = CascadeType.ALL, orphanRemoval = true)
-//    @ToString.Exclude
-//    private List<Itinerary> itineraries;
+    @OneToMany(mappedBy = "tour", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ToString.Exclude
+    private List<Itinerary> itineraries;
 
 }

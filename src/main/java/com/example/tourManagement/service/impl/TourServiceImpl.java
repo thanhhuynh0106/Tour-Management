@@ -66,11 +66,23 @@ public class TourServiceImpl implements TourService {
     }
 
     @Override
+    @Transactional
     public ResponseDTO getTourById(Integer tourId) {
         ResponseDTO responseDTO = new ResponseDTO();
         try {
             Tour tour = tourRepository.findById(tourId)
                     .orElseThrow(() -> new NoSuchElementException("Tour not found with ID: " + tourId));
+
+            if (tour.getItineraries() != null) {
+                tour.getItineraries().size();
+                for (Itinerary itinerary : tour.getItineraries()) {
+                    if (itinerary.getItineraryLocations() != null) {
+                        itinerary.getItineraryLocations().size();
+                        itinerary.getItineraryLocations().forEach(il -> il.getLocation().getLocationId());
+                    }
+                }
+            }
+
             TourDTO tourDTO = Utils.mapTourEntityToTourDTO(tour);
             responseDTO.setTourDTO(tourDTO);
             responseDTO.setMessage("Tour retrieved successfully");
@@ -86,10 +98,24 @@ public class TourServiceImpl implements TourService {
     }
 
     @Override
+    @Transactional
     public ResponseDTO getAllTour() {
         ResponseDTO responseDTO = new ResponseDTO();
         try {
             List<Tour> tourList = tourRepository.findAll();
+
+            for (Tour tour : tourList) {
+                if (tour.getItineraries() != null) {
+                    tour.getItineraries().size();
+                    for (Itinerary itinerary : tour.getItineraries()) {
+                        if (itinerary.getItineraryLocations() != null) {
+                            itinerary.getItineraryLocations().size();
+                            itinerary.getItineraryLocations().forEach(il -> il.getLocation().getLocationId());
+                        }
+                    }
+                }
+            }
+
             List<TourDTO> tourDTOsList = Utils.mapTourListEntityToTourListDTO(tourList);
             responseDTO.setTourList(tourDTOsList);
             responseDTO.setMessage("All tours retrieved successfully");
@@ -110,6 +136,10 @@ public class TourServiceImpl implements TourService {
         try {
             Tour tour = tourRepository.findById(tourId)
                     .orElseThrow(() -> new NoSuchElementException("Tour not found with ID: " + tourId));
+
+            if (tourDTO.getTourTitle() != null) {
+                tour.setTourTitle(tourDTO.getTourTitle());
+            }
 
             if (tourDTO.getTourTitle() != null) {
                 tour.setTourTitle(tourDTO.getTourTitle());

@@ -92,8 +92,45 @@ public class Utils {
         if (tour.getTourCreatedBy() != null) {
             tourDTO.setTourCreatedByUserId(tour.getTourCreatedBy().getUserId());
         }
+
+        if (tour.getItineraries() != null && !tour.getItineraries().isEmpty()) {
+            tourDTO.setItineraries(tour.getItineraries().stream()
+                    // Sắp xếp theo dayNumber để có thứ tự logic
+                    .sorted(java.util.Comparator.comparing(Itinerary::getDayNumber))
+                    .map(Utils::mapItineraryEntityToItineraryDTO)
+                    .collect(Collectors.toList()));
+        }
         return tourDTO;
     }
+
+    public static ItineraryDTO mapItineraryEntityToItineraryDTO(Itinerary itinerary) {
+        if (itinerary == null) {
+            return null;
+        }
+        ItineraryDTO itineraryDTO = new ItineraryDTO();
+        itineraryDTO.setItineraryId(itinerary.getItineraryId());
+        itineraryDTO.setDayNumber(itinerary.getDayNumber());
+        itineraryDTO.setTitle(itinerary.getTitle());
+        itineraryDTO.setDescriptions(itinerary.getDescriptions());
+        if (itinerary.getItineraryLocations() != null && !itinerary.getItineraryLocations().isEmpty()) {
+            itineraryDTO.setItineraryLocations(itinerary.getItineraryLocations().stream()
+                    .sorted(java.util.Comparator.comparing(ItineraryLocation::getSequenceOrder))
+                    .map(Utils::mapItineraryLocationEntityToDTO)
+                    .collect(Collectors.toList()));
+        }
+        return itineraryDTO;
+    }
+
+    public static ItineraryLocationDTO mapItineraryLocationEntityToDTO(ItineraryLocation itineraryLocation) {
+        if (itineraryLocation == null || itineraryLocation.getLocation() == null) {
+            return null;
+        }
+        ItineraryLocationDTO dto = new ItineraryLocationDTO();
+        dto.setLocationId(itineraryLocation.getLocation().getLocationId());
+        dto.setSequenceOrder(itineraryLocation.getSequenceOrder());
+        return dto;
+    }
+
 
     public static List<TourDTO> mapTourListEntityToTourListDTO(List<Tour> tourList) {
         if (tourList == null) {
